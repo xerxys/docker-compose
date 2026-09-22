@@ -5,16 +5,16 @@ services:
     env_file:
       - .env
     ports:
-      - 12378:8080    
+      - ${ROMM_PORT}:8080    
     volumes:
       - romm_resources:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
       - romm_redis_data:/redis-data # Cached data for background tasks
-      - /home/xerxys/mediaserver/plex/data/romm/library:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
-      - /home/xerxys/mediaserver/plex/data/romm/assets:/romm/assets # Uploaded saves, states, etc.
-      - /home/xerxys/mediaserver/config/romm:/romm/config # Path where config.yml is stored
+      - ${DATA_DIRECTORY}/romm/library:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      - ${DATA_DIRECTORY}/romm/assets:/romm/assets # Uploaded saves, states, etc.
+      - ${CONFIG_DIRECTORY}/romm:/romm/config # Path where config.yml is stored
     environment:
       - DB_HOST=romm-db
-      - DB_NAME=romm #Should match MARIADB_DATABASE in mariadb
+      - DB_NAME=${MARIADB_DATABASE}
       - DB_USER=${DB_USER}
       - DB_PASSWD=${DB_PASSWD}
       - ROMM_AUTH_SECRET_KEY=${ROMM_AUTH_SECRET_KEY} 
@@ -44,7 +44,7 @@ services:
       - mysql_data:/var/lib/mysql      
     environment:
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_DATABASE=romm
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
     healthcheck:
