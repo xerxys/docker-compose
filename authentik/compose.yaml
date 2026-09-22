@@ -31,8 +31,8 @@ services:
       - ${COMPOSE_PORT_HTTP:-9000}:9000
       - ${COMPOSE_PORT_HTTPS:-9443}:9443    
     volumes:
-      - ${CONFIG_DIRECTORY}:/data
-      - ${CONFIG_DIRECTORY}/templates:/templates    
+      - ${CONFIG_DIRECTORY}/authentik:/data
+      - ${CONFIG_DIRECTORY}/authentik/templates:/templates    
     environment:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
