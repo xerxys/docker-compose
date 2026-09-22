@@ -1,0 +1,51 @@
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    # ABS runs on port 13378 by default. If you want to change
+    # the port, only change the external port, not the internal port
+    ports:
+      - 13378:80
+    volumes:
+      # These volumes are needed to keep your library persistent
+      # and allow media to be accessed by the ABS server.
+      # The path to the left of the colon is the path on your computer,
+      # and the path to the right of the colon is where the data is
+      # available to ABS in Docker.
+      # You can change these media directories or add as many as you want
+      - /home/xerxys/mediaserver/plex/data/audiobooks:/audiobooks
+      - /home/xerxys/mediaserver/plex/data/podcasts:/podcasts
+      # The metadata directory can be stored anywhere on your computer
+      - /home/xerxys/mediaserver/config/audiobookshelf/metadata:/metadata
+      # The config directory needs to be on the same physical machine
+      # you are running ABS on
+      - /home/xerxys/mediaserver/config/audiobookshelf:/config
+    environment:
+      - TZ=America/Chicago
+    restart: unless-stopped
+    # You can use the following environment variable to run the ABS
+    # docker container as a specific user. You will need to change
+    # the UID and GID to the correct values for your user.
+    #environment:
+    #  - user=1000:1000
+
+  readmeabook:
+    image: ghcr.io/kikootwo/readmeabook:latest
+    container_name: audiobookseerr
+    ports:
+      - "3030:3030"
+    volumes:
+      - /home/xerxys/mediaserver/config/readmeabook:/app/config
+      - /home/xerxys/mediaserver/config/readmeabook/cache:/app/cache
+      - /home/xerxys/mediaserver/downloads:/downloads                          # Your download client's path
+      - /home/xerxys/mediaserver/plex/data/audiobooks:/media                   # Your audiobook library
+      - pgdata:/var/lib/postgresql/data                                        #NAMED VOLUME    location -->   /var/lib/docker/volumes/pgdata/_data
+      - /home/xerxys/mediaserver/config/readmeabook/redis:/var/lib/redis
+    environment:
+      PUID: 1000                      # Optional: your user ID
+      PGID: 1000                      # Optional: your group ID
+      PUBLIC_URL: "https://audiobookseerr.prince-pillai.com"  # Required for OAuth
+    restart: unless-stopped    
+
+volumes:
+  pgdata:

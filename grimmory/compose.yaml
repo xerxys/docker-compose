@@ -1,0 +1,70 @@
+services:
+  grimmory:
+    image: grimmory/grimmory:latest
+    container_name: grimmory
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    env_file:
+      - .env 
+    volumes:
+      - ./data:/app/data
+      - /home/xerxys/mediaserver/plex/data/books:/books
+      - /home/xerxys/mediaserver/bookdrop:/bookdrop
+    environment:
+      - USER_ID=${APP_USER_ID}
+      - GROUP_ID=${APP_GROUP_ID}
+      - TZ=${TZ}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USERNAME=${DB_USER}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - SERVER_PORT=${SERVER_PORT}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mariadb:
+    image: lscr.io/linuxserver/mariadb:11.4.5
+    env_file:
+      - .env 
+    environment:
+      - PUID=${DB_USER_ID}
+      - PGID=${DB_GROUP_ID}
+      - TZ=${TZ}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./mariadb/config:/config
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  shelfmark:
+    image: ghcr.io/calibrain/shelfmark:latest
+    container_name: shelfmark-grimmory
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MAX_CONCURRENT_DOWNLOADS=1
+#      - NODE_ENV=production
+      - HIDE_LOCAL_AUTH=true    # Hide the local login form
+      - DISABLE_LOCAL_AUTH=true # Disable username/password login
+      - OIDC_AUTO_REDIRECT=true  # Skip login page, redirect straight to OIDC
+    ports:
+      - 6061:8084
+    volumes:
+      - /home/xerxys/mediaserver/bookdrop:/bookdrop # Default destination for book downloads
+      - /home/xerxys/mediaserver/config/shelfmark-grimmory:/config # App configuration
+      # Required for torrent / usenet - path must match your download client's volume exactly
+      - /home/xerxys/mediaserver/downloads:/downloads
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp=unconfined
+    shm_size: '2gb' 
+    restart: unless-stopped

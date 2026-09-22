@@ -1,0 +1,62 @@
+services:
+  romm:
+    container_name: romm    
+    image: rommapp/romm:latest
+    env_file:
+      - .env
+    ports:
+      - 12378:8080    
+    volumes:
+      - romm_resources:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
+      - romm_redis_data:/redis-data # Cached data for background tasks
+      - /home/xerxys/mediaserver/plex/data/romm/library:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      - /home/xerxys/mediaserver/plex/data/romm/assets:/romm/assets # Uploaded saves, states, etc.
+      - /home/xerxys/mediaserver/config/romm:/romm/config # Path where config.yml is stored
+    environment:
+      - DB_HOST=romm-db
+      - DB_NAME=romm #Should match MARIADB_DATABASE in mariadb
+      - DB_USER=${DB_USER}
+      - DB_PASSWD=${DB_PASSWD}
+      - ROMM_AUTH_SECRET_KEY=${ROMM_AUTH_SECRET_KEY} 
+      - SCREENSCRAPER_USER=${SCREENSCRAPER_USER}
+      - SCREENSCRAPER_PASSWORD=${SCREENSCRAPER_PASSWORD}
+      - RETROACHIEVEMENTS_API_KEY=${RETROACHIEVEMENTS_API_KEY}
+      - STEAMGRIDDB_API_KEY=${STEAMGRIDDB_API_KEY}
+      - HASHEOUS_API_ENABLED=true
+      - OIDC_ENABLED=true
+      - OIDC_PROVIDER=authentik
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      - OIDC_REDIRECT_URI=${OIDC_REDIRECT_URI}
+      - OIDC_SERVER_APPLICATION_URL=${OIDC_SERVER_APPLICATION_URL}
+    depends_on:
+        romm-db:
+          condition: service_healthy
+          restart: true
+    restart: unless-stopped    
+
+  romm-db:
+    container_name: romm-db
+    image: mariadb:latest
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql      
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=romm
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      start_period: 30s
+      start_interval: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped      
+
+volumes:
+    mysql_data:
+    romm_resources:
+    romm_redis_data:

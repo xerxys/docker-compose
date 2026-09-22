@@ -1,0 +1,42 @@
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin
+    network_mode: host
+    volumes:
+      - /home/xerxys/mediaserver/config/jellyfin:/config
+      - /home/xerxys/mediaserver/cache/jellyfin:/cache
+      - /home/xerxys/mediaserver/plex/data/tv:/media/tv  #
+      - /home/xerxys/mediaserver/plex/data/movies:/media/movies  #
+      - /home/xerxys/mediaserver/plex/data/anime:/media/anime
+      - /home/xerxys/mediaserver/plex/data/music:/media/music
+      - /home/xerxys/mediaserver/plex/data/audiobooks:/media/audiobooks
+      - /home/xerxys/mediaserver/plex/data/live-tv/epg:/media/epg
+#      - type: bind
+#        source: /home/xerxys/mediaserver/plex/data
+#        target: /media
+#        read_only: true
+#      - NVIDIA_VISIBLE_DEVICES=all # Passes all GPUs
+#      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+#    runtime: nvidia # Required for Docker < 19.03
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: all
+#              capabilities: [gpu]
+    restart: unless-stopped
+
+  jellyseerr:
+    container_name: jellyseerr
+    image: fallenbagel/jellyseerr:latest
+    ports:
+      - 5056:5056
+    volumes:
+      - /home/xerxys/mediaserver/config/jellyseerr:/app/config
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=America/Chicago
+      - PORT=5056      
+    restart: unless-stopped

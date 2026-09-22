@@ -1,0 +1,14 @@
+services:
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:latest
+    env_file:
+      - .env
+    ports:
+      - 5690:5690
+    volumes:
+      - /home/xerxys/mediaserver/config/wizarr/database:/data/database
+    environment:
+      - TZ=America/Chicago
+      - APP_URL=${APP_URL}
+    restart: unless-stopped
