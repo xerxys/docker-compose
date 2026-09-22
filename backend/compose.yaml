@@ -2,28 +2,32 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    env_file:
+      - .env
     ports:
-      - 9696:9696  
+      - ${PROWLARR_PORT}:${PROWLARR_PORT}
     volumes:
-      - /home/xerxys/mediaserver/config/Prowlarr:/config
-      - /home/xerxys/mediaserver/downloads:/downloads        
+      - ${CONFIG_DIRECTORY}/Prowlarr:/config
+      - ${DOWNLOADS_DIRECTORY}:/downloads        
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
     restart: unless-stopped
 
   jackett:
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett
+    env_file:
+      - .env
     ports:
-      - 9117:9117  
+      - ${JACKETT_PORT}:${JACKETT_PORT}  
     volumes:
-      - /home/xerxys/mediaserver/config/Jackett:/config
-      - /home/xerxys/mediaserver/downloads:/downloads        
+      - ${CONFIG_DIRECTORY}/Jackett:/config
+      - ${DOWNLOADS_DIRECTORY}:/downloads        
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
       - AUTO_UPDATE=true #optional
 #      - RUN_OPTS= #optional
@@ -32,10 +36,12 @@ services:
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
+    env_file:
+      - .env
     ports:
-      - 8191:8191  
+      - ${FLARESOLVERR_PORT}:${FLARESOLVERR_PORT}  
     volumes:
-      - /home/xerxys/mediaserver/config/Flaresolverr:/config        
+      - ${CONFIG_DIRECTORY}/Flaresolverr:/config        
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info} 
       - LOG_HTML=${LOG_HTML:-false} 
@@ -46,31 +52,35 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
+    env_file:
+      - .env
     ports:
-      - 6767:6767    
+      - ${BAZARR_PORT}:${BAZARR_PORT}    
     volumes:
-      - /home/xerxys/mediaserver/config/bazarr:/config
-      - /home/xerxys/mediaserver/plex/data/movies:/movies #optional
-      - /home/xerxys/mediaserver/plex/data/tv:/tv #optional
-      - /home/xerxys/mediaserver/plex/data/anime:/anime
+      - $CONFIG_DIRECTORY}/bazarr:/config
+      - ${DATA_DIRECTORY}/movies:/movies #optional
+      - ${DATA_DIRECTORY}/tv:/tv #optional
+      - ${DATA_DIRECTORY}/anime:/anime
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
     restart: unless-stopped
   
   radarr:
     image: linuxserver/radarr
     container_name: radarr
+    env_file:
+      - .env
     ports:
-      - 7878:7878   
+      - ${RADARR_PORT}:${RADARR_PORT}   
     volumes:
-      - /home/xerxys/mediaserver/config/Radarr:/config
-      - /home/xerxys/mediaserver/downloads:/downloads
-      - /home/xerxys/mediaserver/plex/data/movies:/movies       
+      - ${CONFIG_DIRECTORY}/Radarr:/config
+      - ${DOWNLOADS_DIRECTORY}:/downloads
+      - ${DATA_DIRECTORY}/movies:/movies       
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
       - UMASK_SET=022 #optional
     restart: unless-stopped
@@ -78,16 +88,18 @@ services:
   sonarr:
     image: linuxserver/sonarr
     container_name: sonarr
+    env_file:
+      - .env
     ports:
-      - 8989:8989    
+      - ${SONARR_PORT}:${SONARR_PORT}    
     volumes:
-      - /home/xerxys/mediaserver/config/Sonarr:/config
-      - /home/xerxys/mediaserver/downloads:/Downloads
-      - /home/xerxys/mediaserver/plex/data/tv:/tv
-      - /home/xerxys/mediaserver/plex/data/anime:/anime      
+      - ${CONFIG_DIRECTORY}/Sonarr:/config
+      - ${DOWNLOADS_DIRECTORY}:/Downloads
+      - ${DATA_DIRECTORY}/tv:/tv
+      - ${DATA_DIRECTORY}/anime:/anime      
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
       - UMASK_SET=022
     restart: unless-stopped
@@ -95,14 +107,16 @@ services:
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
+    env_file:
+      - .env
     ports:
-      - 8686:8686    
+      - ${LIDARR_PORT}:${LIDARR_PORT}    
     volumes:
-      - /home/xerxys/mediaserver/config/lidarr:/config
-      - /home/xerxys/mediaserver/plex/data/music:/music #optional
-      - /home/xerxys/mediaserver/downloads:/downloads #optional
+      - ${CONFIG_DIRECTORY}/lidarr:/config
+      - ${DATA_DIRECTORY}/music:/music #optional
+      - ${DOWNLOADS_DIRECTORY}:/downloads #optional
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
     restart: unless-stopped
