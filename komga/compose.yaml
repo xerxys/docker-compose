@@ -1,0 +1,32 @@
+services:
+  komga:
+    image: gotson/komga:latest
+    container_name: komga
+    ports:
+      - ${KOMGA_PORT}:25600
+    volumes:
+      - ${CONFIG_DIRECTORY}/komga:/config
+      - ${DATA_DIRECTORY}/comics:/data
+    environment:
+      - TZ=America/Chicago
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - KOMGA_CORS_ALLOWEDORIGINS=${KOMGA_ORIGINS}
+    restart: unless-stopped
+
+  komf:
+    image: sndxr/komf:latest
+    container_name: komf
+    ports:
+      - ${KOMF_PORT}:8085
+    volumes:
+      - ${CONFIG_DIRECTORY}/komf:/config        # Path where komf stores config/database
+      - ${DATA_DIRECTORY}/comics:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - KOMF_KOMGA_BASE_URI=${KOMF_BASE_URI}
+      - KOMF_KOMGA_USER=${KOMF_KOMGA_USER}
+      - KOMF_KOMGA_PASSWORD=Zl*${KOMF_KOMGA_PASSWORD}
+      - KOMF_LOG_LEVEL=INFO
+    restart: unless-stopped
