@@ -4,8 +4,10 @@ services:
     container_name: audiobookshelf
     # ABS runs on port 13378 by default. If you want to change
     # the port, only change the external port, not the internal port
+    env_file:
+      - .env
     ports:
-      - 13378:80
+      - ${ABS_PORT}:80
     volumes:
       # These volumes are needed to keep your library persistent
       # and allow media to be accessed by the ABS server.
@@ -13,13 +15,13 @@ services:
       # and the path to the right of the colon is where the data is
       # available to ABS in Docker.
       # You can change these media directories or add as many as you want
-      - /home/xerxys/mediaserver/plex/data/audiobooks:/audiobooks
-      - /home/xerxys/mediaserver/plex/data/podcasts:/podcasts
+      - ${AUDIOBOOK_LIBRARY}:/audiobooks
+      - ${ABS_PODCAST_LIBRARY}:/podcasts
       # The metadata directory can be stored anywhere on your computer
-      - /home/xerxys/mediaserver/config/audiobookshelf/metadata:/metadata
+      - ${ABS_CONFIG_DIRECTORY}/metadata:/metadata
       # The config directory needs to be on the same physical machine
       # you are running ABS on
-      - /home/xerxys/mediaserver/config/audiobookshelf:/config
+      - ${ABS_CONFIG_DIRECTORY}:/config
     environment:
       - TZ=America/Chicago
     restart: unless-stopped
@@ -32,19 +34,21 @@ services:
   readmeabook:
     image: ghcr.io/kikootwo/readmeabook:latest
     container_name: audiobookseerr
+    env_file:
+      - .env
     ports:
-      - "3030:3030"
+      - ${RMAB_PORT}:${RMAB_PORT}
     volumes:
-      - /home/xerxys/mediaserver/config/readmeabook:/app/config
-      - /home/xerxys/mediaserver/config/readmeabook/cache:/app/cache
-      - /home/xerxys/mediaserver/downloads:/downloads                          # Your download client's path
-      - /home/xerxys/mediaserver/plex/data/audiobooks:/media                   # Your audiobook library
+      - ${RMAB_CONFIG_DIRECTORY}:/app/config
+      - ${RMAB_CONFIG_DIRECTORY}/cache:/app/cache
+      - ${DOWNLOADS_DIRECTORY}:/downloads                          # Your download client's path
+      - ${AUDIOBOOK_LIBRARY}:/media                   # Your audiobook library
       - pgdata:/var/lib/postgresql/data                                        #NAMED VOLUME    location -->   /var/lib/docker/volumes/pgdata/_data
-      - /home/xerxys/mediaserver/config/readmeabook/redis:/var/lib/redis
+      - ${RMAB_CONFIG_DIRECTORY}/redis:/var/lib/redis
     environment:
-      PUID: 1000                      # Optional: your user ID
-      PGID: 1000                      # Optional: your group ID
-      PUBLIC_URL: "https://audiobookseerr.prince-pillai.com"  # Required for OAuth
+      - PUID=${PUID}                      # Optional: your user ID
+      - PGID=${PGID}                      # Optional: your group ID
+      - PUBLIC_URL=${PUBLIC_URL}          # Required for OAuth
     restart: unless-stopped    
 
 volumes:
