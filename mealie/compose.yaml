@@ -7,12 +7,12 @@ services:
     ports:
       - ${MEALIE_PORT}:9000
     volumes:
-      - /home/xerxys/mediaserver/plex/data/recipes:/app/data/
-      - /home/xerxys/mediaserver/config/mealie:/config
+      - ${DATA_DIRECTORY}/recipes:/app/data/
+      - ${CONFIG_DIRECTORY}/mealie:/config
     environment:
       - ALLOW_SIGNUP="false"
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=America/Chicago
       - BASE_URL=${BASE_URL}
 #    deploy:
