@@ -2,16 +2,17 @@ services:
   jellyfin:
     container_name: jellyfin
     image: jellyfin/jellyfin
-    network_mode: host
+    ports:
+      - ${JELLYFIN_PORT}:8096
     volumes:
-      - /home/xerxys/mediaserver/config/jellyfin:/config
-      - /home/xerxys/mediaserver/cache/jellyfin:/cache
-      - /home/xerxys/mediaserver/plex/data/tv:/media/tv  #
-      - /home/xerxys/mediaserver/plex/data/movies:/media/movies  #
-      - /home/xerxys/mediaserver/plex/data/anime:/media/anime
-      - /home/xerxys/mediaserver/plex/data/music:/media/music
-      - /home/xerxys/mediaserver/plex/data/audiobooks:/media/audiobooks
-      - /home/xerxys/mediaserver/plex/data/live-tv/epg:/media/epg
+      - ${CONFIG_DIRECTORY}/jellyfin:/config
+      - ${CACHE_DIRECTORY}/jellyfin:/cache
+      - ${DATA_DIRECTORY}/tv:/media/tv  #
+      - ${DATA_DIRECTORY}/movies:/media/movies  #
+      - ${DATA_DIRECTORY}/anime:/media/anime
+      - ${DATA_DIRECTORY}/music:/media/music
+      - ${DATA_DIRECTORY}/audiobooks:/media/audiobooks
+      - ${DATA_DIRECTORY}/live-tv/epg:/media/epg
 #      - type: bind
 #        source: /home/xerxys/mediaserver/plex/data
 #        target: /media
@@ -28,15 +29,18 @@ services:
 #              capabilities: [gpu]
     restart: unless-stopped
 
-  jellyseerr:
-    container_name: jellyseerr
-    image: fallenbagel/jellyseerr:latest
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
     ports:
-      - 5056:5056
+      - ${SEERR_PORT}:5055  
     volumes:
-      - /home/xerxys/mediaserver/config/jellyseerr:/app/config
+      - ${CONFIG_DIRECTORY}/jellyseerr:/app/config        
     environment:
       - LOG_LEVEL=debug
       - TZ=America/Chicago
-      - PORT=5056      
+      - PORT=${SEERR_PORT} #optiona
+      - PUID=${PUID}
+      - PGID=${PGID}
     restart: unless-stopped
