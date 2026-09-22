@@ -3,15 +3,15 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     ports:
-      - 3000:3000
+      - ${HOMEPAGE_PORT}:3000
     volumes:
-      - /home/xerxys/mediaserver/config/homepage:/app/config # Make sure your local config directory exists
+      - ${CONFIG_DIRECTORY}/homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
-      - /mnt/primary:/mnt/default
-      - /mnt/secondary:/mnt/tv
-      - /home/xerxys/mediaserver/downloads:/mnt/downloads
+      - ${PRIMARY_MOUNT}:/mnt/default
+      - ${SECONDARY_MOUNT}:/mnt/tv
+      - ${DOWNLOADS_DIRECTORY}:/mnt/downloads
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: gethomepage.dev,homepage.prince-pillai.com,prince-pillai.com,192.168.86.240:3000 # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
-      PUID: 1000
-      PGID: 1000
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS} # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
+      - PUID=${PUID}
+      - PGID=${PGID}
     restart: unless-stopped
