@@ -4,18 +4,18 @@ services:
     container_name: calibre-web-automated
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
-      - 8083:8083
+      - ${CWA_PORT}:8083
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
-      - /home/xerxys/mediaserver/config/calibre-web-automated:/config 
+      - ${CONFIG_DIRECTORY}/calibre-web-automated:/config 
       # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
-      - /home/xerxys/mediaserver/calibre-ingest:/cwa-book-ingest
+      - ${BOOK_INGEST}:/cwa-book-ingest
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
-      - /home/xerxys/mediaserver/plex/data/ebooks:/calibre-library 
+      - ${DATA_DIRECTORY}/ebooks:/calibre-library 
     environment:
       # Only change these if you know what you're doing
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       # Edit to match your current timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - TZ=America/Chicago 
     restart: unless-stopped
@@ -24,17 +24,17 @@ services:
     image: ghcr.io/calibrain/shelfmark:latest
     container_name: shelfmark
     ports:
-      - 8084:8084
+      - ${SHELFMARK_PORT}:8084
     volumes:
-      - /home/xerxys/mediaserver/calibre-ingest:/books # Default destination for book downloads
-      - /home/xerxys/mediaserver/config/shelfmark:/config # App configuration
+      - ${BOOK_INGEST}:/books # Default destination for book downloads
+      - ${CONFIG_DIRECTORY}/shelfmark:/config # App configuration
       # Required for Calibre account syncing
-      - /home/xerxys/mediaserver/config/calibre-web-automated/app.db:/auth/app.db
+      - ${CONFIG_DIRECTORY}/calibre-web-automated/app.db:/auth/app.db
       # Required for torrent / usenet - path must match your download client's volume exactly
-      - /home/xerxys/mediaserver/downloads:/downloads
+      - ${DOWNLOADS_DIRECTORY}:/downloads
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - MAX_CONCURRENT_DOWNLOADS=1
 #      - NODE_ENV=production      
     cap_add:
