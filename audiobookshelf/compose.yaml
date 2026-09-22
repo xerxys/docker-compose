@@ -15,13 +15,13 @@ services:
       # and the path to the right of the colon is where the data is
       # available to ABS in Docker.
       # You can change these media directories or add as many as you want
-      - ${AUDIOBOOK_LIBRARY}:/audiobooks
-      - ${ABS_PODCAST_LIBRARY}:/podcasts
+      - ${DATA_DIRECTORY}/audiobooks:/audiobooks
+      - ${DATA_DIRECTORY}/podcasts:/podcasts
       # The metadata directory can be stored anywhere on your computer
-      - ${ABS_CONFIG_DIRECTORY}/metadata:/metadata
+      - ${CONFIG_DIRECTORY}/audiobookshelf/metadata:/metadata
       # The config directory needs to be on the same physical machine
       # you are running ABS on
-      - ${ABS_CONFIG_DIRECTORY}:/config
+      - ${CONFIG_DIRECTORY}/audiobookshelf:/config
     environment:
       - TZ=America/Chicago
     restart: unless-stopped
@@ -39,12 +39,12 @@ services:
     ports:
       - ${RMAB_PORT}:${RMAB_PORT}
     volumes:
-      - ${RMAB_CONFIG_DIRECTORY}:/app/config
-      - ${RMAB_CONFIG_DIRECTORY}/cache:/app/cache
+      - ${CONFIG_DIRECTORY}/readmeabook:/app/config
+      - ${CONFIG_DIRECTORY}/readmeabook/cache:/app/cache
       - ${DOWNLOADS_DIRECTORY}:/downloads                          # Your download client's path
-      - ${AUDIOBOOK_LIBRARY}:/media                   # Your audiobook library
+      - ${DATA_DIRECTORY}/audiobooks:/media                   # Your audiobook library
       - pgdata:/var/lib/postgresql/data                                        #NAMED VOLUME    location -->   /var/lib/docker/volumes/pgdata/_data
-      - ${RMAB_CONFIG_DIRECTORY}/redis:/var/lib/redis
+      - ${CONFIG_DIRECTORY}/readmeabook/redis:/var/lib/redis
     environment:
       - PUID=${PUID}                      # Optional: your user ID
       - PGID=${PGID}                      # Optional: your group ID
