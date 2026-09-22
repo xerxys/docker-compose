@@ -104,19 +104,19 @@ services:
       - UMASK_SET=022
     restart: unless-stopped
 
-  lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    env_file:
-      - .env
-    ports:
-      - ${LIDARR_PORT}:${LIDARR_PORT}    
-    volumes:
-      - ${CONFIG_DIRECTORY}/lidarr:/config
-      - ${DATA_DIRECTORY}/music:/music #optional
-      - ${DOWNLOADS_DIRECTORY}:/downloads #optional
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=America/Chicago
-    restart: unless-stopped
+#  lidarr:
+#    image: lscr.io/linuxserver/lidarr:latest
+#    container_name: lidarr
+#    env_file:
+#      - .env
+#    ports:
+#      - ${LIDARR_PORT}:${LIDARR_PORT}    
+#    volumes:
+#      - ${CONFIG_DIRECTORY}/lidarr:/config
+#      - ${DATA_DIRECTORY}/music:/music #optional
+#      - ${DOWNLOADS_DIRECTORY}:/downloads #optional
+#    environment:
+#      - PUID=${PUID}
+#      - PGID=${PGID}
+#      - TZ=America/Chicago
+#    restart: unless-stopped
