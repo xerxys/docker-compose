@@ -11,10 +11,10 @@ services:
       - .env 
     volumes:
       # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
-      - ${UPLOAD_LOCATION}:/data
+      - ${DATA_DIRECTORY}/immich:/data
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - '2283:2283'
+      - ${IMMICH_SERVER_PORT}:2283
     depends_on:
       - redis
       - database
@@ -59,7 +59,7 @@ services:
       # DB_STORAGE_TYPE: 'HDD'
     volumes:
       # Do not edit the next line. If you want to change the database storage location on your system, edit the value of DB_DATA_LOCATION in the .env file
-      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+      - ${CONFIG_DIRECTORY}/immich/postgres:/var/lib/postgresql/data
     shm_size: 128mb
     restart: always
     healthcheck:
